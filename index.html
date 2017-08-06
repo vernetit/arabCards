@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<!--
+  * Please see the included README.md file for license terms and conditions.
+  -->
+<head>
+    <meta charset="UTF-8">
+    <title>Arabian Memory Cards</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+    <!-- see http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/quick-tip-dont-forget-the-viewport-meta-tag -->
+    <!-- <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=no">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, minimum-scale=1, maximum-scale=2"> -->
+    <style>
+        /* following two viewport lines are equivalent to meta viewport statement above, and is needed for Windows */
+        /* see http://www.quirksmode.org/blog/archives/2014/05/html5_dev_conf.html and http://dev.w3.org/csswg/css-device-adapt/ */
+        @-ms-viewport { width: 100vw ; min-zoom: 100% ; zoom: 100% ; }          @viewport { width: 100vw ; min-zoom: 100% zoom: 100% ; }
+        @-ms-viewport { user-zoom: fixed ; min-zoom: 100% ; }                   @viewport { user-zoom: fixed ; min-zoom: 100% ; }
+        /*@-ms-viewport { user-zoom: zoom ; min-zoom: 100% ; max-zoom: 200% ; }   @viewport { user-zoom: zoom ; min-zoom: 100% ; max-zoom: 200% ; }*/
+        
+
+        #bottom-content {
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              height: 50px;
+              width: 100%;
+              border-top: 0.5px solid;
+              border-bottom: 0.5px solid;
+              vertical-align: middle;
+            }
+            .btn:focus {
+              outline: none;
+            }
+            .ocultar{
+              display:none;
+            }
+    </style>
+
+    <!-- Uncomment the following scripts if you convert your "Standard HTML5" project into a "Cordova" project. -->
+    <!-- <script src="cordova.js"></script> -->          <!-- phantom library, needed for Cordova api calls, added during build -->
+    <!-- <script src="js/app.js"></script> -->           <!-- recommended location of your JavaScript code relative to other JS files -->
+    <!-- <script src="xdk/init-dev.js"></script> -->     <!-- normalizes device and document ready events, see README for details -->
+    
+<!--    <script src="js/babel.js"></script>-->
+<!--    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>-->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/underscore-min.js"></script>
+   
+    
+    
+</head>
+
+<body>
+
+<div id="controls-div">
+<a name="top">
+<a href="#"><img src="cartasArab/12.png" width="32px" height="32px"></a>&nbsp;<span id="myTitle"><a href="/flashCards" style="color: black; text-decoration: none;"><b>Arabian Memory Cards</b></a></span>&nbsp;
+<select class="btn ocultar" id="game"></select>
+<select id="decks-q">
+  <option value="1">1 deck</option>
+  <option value="2">2 decks</option>
+  <option value="3">3 decks</option>
+  <option value="4">4 decks</option>
+  <option value="5">5 decks</option>
+  <option value="6">6 decks</option>
+  <option value="7">7 decks</option>
+  <option value="8">8 decks</option>
+  <option value="9">9 decks</option>
+  <option value="10">10 decks</option>
+</select>
+<select id="cByFlash">
+  <option value="1">1 cards</option>
+  <option value="2">2 cards</option>
+  <option value="3">3 cards</option>
+</select>
+<input class="btn" type="button" value="start" onclick="jugarRapid(1);" onmousedown="preventFocus()" id="start-btn">&nbsp;
+<input type="button" value="Manage configurations" onclick="config();" id="cfg-btn" style="display:none;">
+<span class="ocultar">
+<span id="noTime-span">noTime</span><input type="checkbox" id="noTime" onclick="noTime=!noTime; nttt();">&nbsp;
+</span>
+<a href="#" onclick="bHelp=!bHelp; bHelp?$('#screen').html('<br>Arabian Memory Cards!<br><br>Key space: Start flash!<br>Key right: next card left previous card<br>On mobile press on the card to go previous card.<br>contact: robertchalean@gmail.com'):$('#screen').html('');"><img src="img/help.png"></a>
+&nbsp;&nbsp;<div class="fb-share-button" data-href="http://competicionmental.appspot.com/ArabianMemoryCards" data-layout="button_count" style="float: right;"></div>
+</div>
+<br>
+<div id="screen" style="margin-top: 10px;"></div>
+<br>
+<div id="preload" style="opacity: 0.5"></div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div id="bottom-content">
+  <div style="width:100%; float:left;" id="go-btn" onclick="jugarRapid(1);"><center style="margin-top: 10px; font-size: 25px;"><b id="go-txt">GO!</b></center></div>
+  <div style="width: 0px; float:left;" id="next-btn" onclick="next();"><center style="margin-top: 10px; font-size: 25px;"><b>Next</b></center></div>
+</div>
+
+<script>
+
+function preventFocus() {
+
+    setTimeout(function() { $("#game").focus() }, 1);
+}
+
+bHelp=0;
+
+$("#screen").html("Loading...");
+
+zPreload=0;
+
+$("#controls-div").hide(); 
+
+function preload() {
+
+    /*
+    $(arrayOfImages).each(function(){
+        $('<img/>')[0].src = this;
+        $('<img/>').ready(function(){ 
+
+          //console.log(imgLoadedCount);
+          
+          imgLoadedCount++; 
+          if(imgLoadedCount>50){ $("#screen").html(""); }
+        });
+        // Alternatively you could use:
+        // (new Image()).src = this;
+    });
+  */
+      for(i=0;i<arrayImages.length;i++){
+
+      //console.log(`<img src="${arrayImages[i]}" id="imgPreload-${zPreload}">`);
+
+       $("#preload").append(`<img src="${arrayImages[i]}" id="imgPreload-${zPreload}" width="32" height="32">`);
+
+       $(`#imgPreload-${zPreload}`).on("load",function(){
+
+          imgLoadedCount++; 
+          if(imgLoadedCount>50){ 
+            $("#screen").html(""); 
+            $("#preload").hide(); 
+            $("#controls-div").show();
+
+
+         }
+       });
+
+       zPreload++;
+    }
+
+
+} 
+
+
+
+arrayImages=[];
+imgLoadedCount=0;
+
+for(i=0;i<52;i++){
+  arrayImages[i]="cartasArab/"+(i)+".png";
+} 
+
+preload();
+
+//$("<img>").on('load', function() { imgLoadedCount++; console.log(imgLoadedCount); if(imgLoadedCount>50){ $("#screen").html(""); } });
+
+winWidth =  $(window).width();
+
+bMovil =0;
+if(winWidth<1000){
+  //alert("The App was designed to use in Desktop Pc. It can have speed issues.\n La App fue pensada para usar en Pc de Escritorio. En celulares puede tener problemas de velocidad");
+  $(":button").css("zoom","1.25");
+  $("#game").css("zoom","1.25");
+  $("#screen").css("zoom","1.3");
+
+  $("#screen").css("margin-top","-20px");
+
+  $("#myTitle").hide();
+  $(".fb-share-button").hide();
+
+  $("#screen").css("zoom","1");
+
+  $("#cfg-btn").val("cfg");
+  $("#noTime-span").html("nt");
+
+  bMovil = 1;
+
+}else{
+  $("#screen").css("zoom","1.3");
+
+  $("#bottom-content").hide();
+}
+
+</script>
+
+<script src="js/flash/arab/flashCardsArabConfig.js"></script>
+<script src="js/flash/arab/flashCardsArabGame.js"></script>
+
+</body>
+</html>
